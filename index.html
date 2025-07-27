@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Code Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">QR Code Generator</h1>
+    <input id="qrInput" type="text" placeholder="Masukkan teks atau URL" class="w-full p-3 border rounded mb-4" />
+    <button id="generateBtn" class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Generate</button>
+    <div id="qrcode" class="mt-6"></div>
+  </div>
+
+  <script>
+    const qrInput = document.getElementById('qrInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const qrcodeDiv = document.getElementById('qrcode');
+
+    generateBtn.addEventListener('click', () => {
+      const value = qrInput.value.trim();
+      if (!value) return alert('Masukkan teks atau URL!');
+      qrcodeDiv.innerHTML = '';
+      new QRCode(qrcodeDiv, {
+        text: value,
+        width: 200,
+        height: 200,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    });
+  </script>
+</body>
+</html>
