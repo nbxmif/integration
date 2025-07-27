@@ -7,49 +7,75 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    /* Warna latar belakang dasar untuk mode terang */
+    /* Mengatur font agar mirip Gemini (Google Sans / Product Sans) */
+    /* Fallback ke sans-serif jika tidak tersedia */
     body {
-      background-color: #F8F8F8; /* Warna abu-abu sangat terang, mirip kertas */
-      transition: background-color 0.3s ease; /* Transisi halus saat berubah tema */
+      font-family: 'Google Sans', 'Product Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease; /* Transisi halus */
     }
 
-    /* Media query untuk mode gelap */
+    /* Tema dasar (Light mode - meskipun Gemini lebih dominan gelap, ini untuk fallback) */
+    body {
+      background-color: #f0f3f6; /* Latar belakang terang yang lembut */
+      color: #202124; /* Warna teks gelap */
+    }
+
+    .card-container { /* Kontainer utama */
+      background-color: #ffffff; /* Kartu putih bersih */
+      border: 1px solid #dadce0; /* Sedikit border halus */
+    }
+
+    .input-field {
+      background-color: #f8f9fa; /* Latar belakang input lebih terang dari body */
+      border: 1px solid #dadce0;
+      color: #202124;
+    }
+
+    .text-title {
+      color: #202124;
+    }
+
+    .text-info {
+      color: #5f6368; /* Warna abu-abu yang lebih lembut untuk info */
+    }
+
+    /* --- Media query untuk Dark Mode (mirip Gemini) --- */
     @media (prefers-color-scheme: dark) {
       body {
-        background-color: #1A1A1A; /* Abu-abu gelap untuk mode gelap */
-        color: #E0E0E0; /* Warna teks lebih terang untuk kontras */
+        background-color: #131314; /* Latar belakang gelap khas Gemini */
+        color: #e8eaed; /* Teks terang */
       }
-      .bg-white { /* Menyesuaikan kartu utama agar terlihat bagus di mode gelap */
-        background-color: #2D2D2D; 
+      .card-container {
+        background-color: #202021; /* Warna kartu lebih gelap */
+        border: 1px solid #3c4043; /* Border yang lebih gelap */
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Sedikit bayangan untuk kedalaman */
       }
-      .text-gray-800 { /* Menyesuaikan judul */
-        color: #F0F0F0;
+      .input-field {
+        background-color: #303134; /* Latar belakang input gelap */
+        border: 1px solid #5f6368;
+        color: #e8eaed;
       }
-      .text-gray-500 { /* Menyesuaikan teks info */
-        color: #B0B0B0;
+      .text-title {
+        color: #e8eaed;
       }
-      .border { /* Menyesuaikan border input */
-        border-color: #444;
+      .text-info {
+        color: #bdc1c6; /* Warna abu-abu terang untuk info */
       }
-      .w-full.p-3.border.rounded.mb-2 { /* Menyesuaikan input field */
-        background-color: #3A3A3A;
-        color: #E0E0E0;
-      }
-      /* Menyesuaikan warna QR code agar cocok di mode gelap */
+      /* Inversi warna untuk QR code di mode gelap */
       #qrcode canvas {
-        filter: invert(1) hue-rotate(180deg); /* Membalikkan warna QR untuk kontras yang baik */
+        filter: invert(1) hue-rotate(180deg);
       }
     }
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
-  <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
-    <h1 class="text-3xl font-bold mb-4 text-gray-800">QR Code Generator</h1>
+  <div class="card-container p-8 rounded-xl shadow-lg w-full max-w-md text-center">
+    <h1 class="text-3xl font-bold mb-4 text-title">QR Code Generator</h1>
     
     <input id="qrInput" type="text" placeholder="Masukkan teks atau URL"
-      class="w-full p-3 border rounded mb-2" value="https://example.com" />
+      class="input-field w-full p-3 rounded mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500" value="https://example.com" />
     
-    <p class="text-sm text-gray-500 mb-4">
+    <p class="text-sm text-info mb-4">
         QR code akan otomatis muncul saat Anda mulai mengetik teks atau URL.
     </p>
 
