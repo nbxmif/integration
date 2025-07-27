@@ -6,8 +6,43 @@
   <title>QR Code Generator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    /* Warna latar belakang dasar untuk mode terang */
+    body {
+      background-color: #F8F8F8; /* Warna abu-abu sangat terang, mirip kertas */
+      transition: background-color 0.3s ease; /* Transisi halus saat berubah tema */
+    }
+
+    /* Media query untuk mode gelap */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1A1A1A; /* Abu-abu gelap untuk mode gelap */
+        color: #E0E0E0; /* Warna teks lebih terang untuk kontras */
+      }
+      .bg-white { /* Menyesuaikan kartu utama agar terlihat bagus di mode gelap */
+        background-color: #2D2D2D; 
+      }
+      .text-gray-800 { /* Menyesuaikan judul */
+        color: #F0F0F0;
+      }
+      .text-gray-500 { /* Menyesuaikan teks info */
+        color: #B0B0B0;
+      }
+      .border { /* Menyesuaikan border input */
+        border-color: #444;
+      }
+      .w-full.p-3.border.rounded.mb-2 { /* Menyesuaikan input field */
+        background-color: #3A3A3A;
+        color: #E0E0E0;
+      }
+      /* Menyesuaikan warna QR code agar cocok di mode gelap */
+      #qrcode canvas {
+        filter: invert(1) hue-rotate(180deg); /* Membalikkan warna QR untuk kontras yang baik */
+      }
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+<body class="min-h-screen flex items-center justify-center p-4">
   <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
     <h1 class="text-3xl font-bold mb-4 text-gray-800">QR Code Generator</h1>
     
@@ -41,10 +76,8 @@
     qrInput.addEventListener('input', () => {
       const value = qrInput.value.trim();
       if (value) {
-        // Jika ada nilai, buat QR code
         qr.makeCode(value); 
       } else {
-        // Jika kosong, cukup bersihkan QR code yang ada
         qr.clear(); 
       }
     });
