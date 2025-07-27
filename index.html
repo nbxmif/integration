@@ -17,8 +17,11 @@
     <h1 class="text-3xl font-bold mb-6 text-gray-800">QR Code Generator</h1>
     <input id="qrInput" type="text" placeholder="Masukkan teks atau URL" class="w-full p-3 border rounded mb-4" />
     <button id="generateBtn" class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Generate</button>
-    <div id="qrcode" class="mt-6"></div>
+<!-- QR code container, ditengahkan -->
+  <div class="mt-6 flex justify-center">
+  <div id="qrcode"></div>
   </div>
+
 
   <script>
     const qrInput = document.getElementById('qrInput');
