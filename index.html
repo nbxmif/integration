@@ -12,11 +12,10 @@
     <h1 class="text-3xl font-bold mb-4 text-gray-800">QR Code Generator</h1>
     
     <input id="qrInput" type="text" placeholder="Masukkan teks atau URL"
-      class="w-full p-3 border rounded mb-2" />
-    
-    <p class="text-sm text-gray-500 mb-4">QR code akan otomatis terbuat begitu kamu memasukkan teks atau URL.</p>
+      class="w-full p-3 border rounded mb-2" value="https://example.com" /> <p class="text-sm text-gray-500 mb-4">
+        QR code akan otomatis muncul setelah Anda mulai mengetik teks atau URL.
+    </p>
 
-    <!-- Container untuk QR -->
     <div class="mt-6 flex justify-center">
       <div id="qrcode"></div>
     </div>
@@ -25,11 +24,12 @@
   <script>
     const qrInput = document.getElementById('qrInput');
     const qrcodeDiv = document.getElementById('qrcode');
-    let qr;
+    
+    // Ambil nilai default dari input
+    const initialText = qrInput.value.trim(); 
 
-    // Inisialisasi QRCode object satu kali
-    qr = new QRCode(qrcodeDiv, {
-      text: "",
+    let qr = new QRCode(qrcodeDiv, {
+      text: initialText, // Gunakan nilai default di sini
       width: 300,
       height: 300,
       colorDark: "#000000",
@@ -37,17 +37,14 @@
       correctLevel: QRCode.CorrectLevel.H
     });
 
-    function updateQRCode(value) {
-      qrcodeDiv.innerHTML = ""; // clear
-      qr.makeCode(value);       // buat baru
-    }
-
     qrInput.addEventListener('input', () => {
       const value = qrInput.value.trim();
       if (value) {
-        updateQRCode(value);
+        qr.clear();
+        qr.makeCode(value);
       } else {
-        qrcodeDiv.innerHTML = ""; // clear jika kosong
+        // Ini akan menghapus QR code jika input dikosongkan
+        qrcodeDiv.innerHTML = ""; 
       }
     });
   </script>
