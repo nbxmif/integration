@@ -1,4 +1,4 @@
-# qrgenerator
+# QR Code generator
 generate qr easily like never been before.
 compatible with any device, works both in online and offline mode.
 
