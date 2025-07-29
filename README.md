@@ -1,6 +1,6 @@
-# Integraiton Flow
+# ShopeePay Integration Flow
 
-This page is containing ShopeePay integration flow using MPM (merchant presented mode) and Account Linking flow.
+This page is containing ShopeePay integration flow using MPM (merchant presented mode) and Account Linking method.
 
 
 ### Light mode:
