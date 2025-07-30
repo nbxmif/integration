@@ -281,7 +281,6 @@
   <div class="card-container p-8 rounded-xl shadow-lg w-full max-w-md text-center">
     <h1 class="text-3xl font-bold mb-6 text-title">ShopeePay Integration</h1>
     
-    <!-- Tab Navigation -->
     <div class="tab-container">
       <div class="tab active" data-tab="generate-qr">
         <svg class="tab-icon" viewBox="0 0 24 24">
@@ -297,16 +296,14 @@
       </div>
     </div>
 
-    <!-- Generate QR Tab Content -->
     <div id="generate-qr-content" class="tab-content active">
-      <input id="qrInput" type="text" placeholder="Masukkan teks atau URL"
-        class="input-field w-full p-3 rounded mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500" value="https://example.com" />
+      <input id="qrInput" type="text" placeholder="Enter text or URL"
+        class="input-field w-full p-3 rounded mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500" value="" />
       
       <p class="text-sm text-info mb-4">
         QR code will be generated automatically as you type.
       </p>
 
-      <!-- Size Selector -->
       <div class="mb-4">
         <label class="block text-sm font-medium mb-2 text-title">QR Code Size:</label>
         <select id="sizeSelector" class="size-selector">
@@ -323,7 +320,6 @@
         </div>
       </div>
 
-      <!-- Download Options -->
       <div class="mt-6" id="downloadSection" style="display: none;">
         <h3 class="text-lg font-semibold mb-3 text-title">Download QR Code</h3>
         <div class="flex flex-wrap justify-center">
@@ -334,7 +330,6 @@
       </div>
     </div>
 
-    <!-- Account Linking Tab Content -->
     <div id="account-linking-content" class="tab-content">
       <div class="py-6">
         <div class="text-center mb-6">
@@ -344,27 +339,25 @@
           <h3 class="text-xl font-semibold mb-4 text-title">Account Linking</h3>
         </div>
 
-        <!-- Instructions -->
         <div class="mb-6 text-left">
           <p class="text-sm text-info mb-4">
-            Input the <strong>authCode</strong> that is generated from<code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-xs font-mono italic">...v1.0/get-auth-code</code> here.
+            Input the <strong>auth_code</strong> that is generated from<code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-xs font-mono italic">...v1.0/get-auth-code</code> here.
           </p>
           <p class="text-sm text-info mb-4">
-            e.g: <strong>160642764803062462</strong>
+            e.g: <strong>168319834608511432</strong> and hit "Enter" or click "Initiate Account Linking"
           </p>
+          
         </div>
 
-        <!-- AuthCode Input -->
         <div class="mb-6">
           <input
             id="authCodeInput"
             type="text"
-            placeholder="Enter your authCode here..."
+            placeholder="Enter the auth-code here"
             class="input-field w-full p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        <!-- Proceed Button -->
         <div class="text-center">
           <button
             id="proceedButton"
@@ -374,7 +367,6 @@
           </button>
         </div>
         
-        <!-- Reference Description -->
         <div class="mt-4 text-center">
           <p class="text-xs text-info">
             reference: <a href="https://product.shopeepay.co.id/integration/api/account-linking/go/#initiate-account-linking" target="_blank" class="text-blue-600 hover:text-blue-800 underline">https://product.shopeepay.co.id/.../#initiate-account-linking</a>
@@ -385,26 +377,44 @@
   </div>
 
   <script>
-    // --- QR Code Generation Logic (Unchanged) ---
+    // --- Helper function to get URL parameters ---
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    // --- QR Code Generation Logic ---
     const qrInput = document.getElementById('qrInput');
     const qrcodeDiv = document.getElementById('qrcode');
     const sizeSelector = document.getElementById('sizeSelector');
     const downloadSection = document.getElementById('downloadSection');
     
-    const initialText = qrInput.value.trim(); 
-    let currentSize = parseInt(sizeSelector.value);
+    let qr; 
 
-    let qr = new QRCode(qrcodeDiv, {
-      text: initialText,
-      width: currentSize,
-      height: currentSize,
-      colorDark: "#000000",
-      colorLight: "#ffffff",
-      correctLevel: QRCode.CorrectLevel.H
-    });
+    function initializeQrCode() {
+        const initialText = qrInput.value.trim(); 
+        let currentSize = parseInt(sizeSelector.value);
 
-    if (initialText) {
-      downloadSection.style.display = 'block';
+        if (!qr) { // Only create new QRCode instance if it doesn't exist
+            qr = new QRCode(qrcodeDiv, {
+                text: initialText || ' ', // Use a space or empty string to ensure QR code is not generated with "example.com"
+                width: currentSize,
+                height: currentSize,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        } else { // If already exists, just update its text
+            qr.makeCode(initialText || ' '); // Update with space or empty string
+        }
+
+        if (initialText) {
+            downloadSection.style.display = 'block';
+        } else {
+            downloadSection.style.display = 'none'; // Hide download options if input is empty
+        }
     }
 
     qrInput.addEventListener('input', () => {
@@ -420,10 +430,10 @@
 
     sizeSelector.addEventListener('change', () => {
       currentSize = parseInt(sizeSelector.value);
-      qrcodeDiv.innerHTML = '';
+      qrcodeDiv.innerHTML = ''; // Clear existing QR code to redraw with new size
       
       qr = new QRCode(qrcodeDiv, {
-        text: qrInput.value.trim() || 'https://example.com',
+        text: qrInput.value.trim() || ' ', // Re-initialize with space or empty string if input is empty
         width: currentSize,
         height: currentSize,
         colorDark: "#000000",
@@ -449,39 +459,39 @@
     document.getElementById('downloadSVG').addEventListener('click', () => {
         const canvas = getQRCanvas();
         if (canvas) {
-            const size = canvas.width; // QR is square
-            const ctx = canvas.getContext('2d');
-            let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">`;
-            svg += `<rect width="100%" height="100%" fill="#ffffff"/>`; // Background
-            
-            // This is a simplified conversion. We find the module size and draw rects.
-            const qrData = qr._o.text; // get the text
-            const tempQr = document.createElement('div');
-            new QRCode(tempQr, { text: qrData, width: size, height: size });
-            const tempCanvas = tempQr.querySelector('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
-            const moduleCount = qr._o.correctLevel === QRCode.CorrectLevel.H ? 25 : 21; // Approximation
-            const moduleSize = size / moduleCount;
+          const size = canvas.width; // QR is square
+          const ctx = canvas.getContext('2d');
+          let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">`;
+          svg += `<rect width="100%" height="100%" fill="#ffffff"/>`; // Background
+          
+          const qrData = qr._o.text; // get the text
+          const tempQr = document.createElement('div');
+          new QRCode(tempQr, { text: qrData, width: size, height: size });
+          const tempCanvas = tempQr.querySelector('canvas');
+          const tempCtx = tempCanvas.getContext('2d');
+          const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+          const pixels = imageData.data;
+          const modulePixelSize = qr._o.width / qr._o.modules.length;
 
-            for (let row = 0; row < moduleCount; row++) {
-                for (let col = 0; col < moduleCount; col++) {
-                    const x = col * moduleSize + moduleSize / 2;
-                    const y = row * moduleSize + moduleSize / 2;
-                    const pixelData = tempCtx.getImageData(x, y, 1, 1).data;
-                    if (pixelData[0] === 0) { // if black
-                        svg += `<rect x="${col * moduleSize}" y="${row * moduleSize}" width="${moduleSize}" height="${moduleSize}" fill="#000000"/>`;
-                    }
-                }
-            }
+          for (let row = 0; row < qr._o.modules.length; row++) {
+              for (let col = 0; col < qr._o.modules.length; col++) {
+                  const x = Math.floor(col * modulePixelSize + modulePixelSize / 2);
+                  const y = Math.floor(row * modulePixelSize + modulePixelSize / 2);
+                  const index = (y * tempCanvas.width + x) * 4;
+                  if (pixels[index] === 0 && pixels[index+1] === 0 && pixels[index+2] === 0) { // If it's a black pixel
+                      svg += `<rect x="${col * modulePixelSize}" y="${row * modulePixelSize}" width="${modulePixelSize}" height="${modulePixelSize}" fill="#000000"/>`;
+                  }
+              }
+          }
 
-            svg += `</svg>`;
-            const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
-            const svgUrl = URL.createObjectURL(svgBlob);
-            const link = document.createElement('a');
-            link.download = `qrcode-${currentSize}x${currentSize}.svg`;
-            link.href = svgUrl;
-            link.click();
-            URL.revokeObjectURL(svgUrl);
+          svg += `</svg>`;
+          const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+          const svgUrl = URL.createObjectURL(svgBlob);
+          const link = document.createElement('a');
+          link.download = `qrcode-${currentSize}x${currentSize}.svg`;
+          link.href = svgUrl;
+          link.click();
+          URL.revokeObjectURL(svgUrl);
         }
     });
 
@@ -515,7 +525,7 @@
       }
     });
 
-    // --- Tab Switching Logic (Unchanged) ---
+    // --- Tab Switching Logic ---
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -528,7 +538,7 @@
       });
     });
 
-    // --- Account Linking Logic (FIXED) ---
+    // --- Account Linking Logic ---
     const authCodeInput = document.getElementById('authCodeInput');
     const proceedButton = document.getElementById('proceedButton');
 
@@ -538,7 +548,6 @@
      */
     function showAlertModal(message) {
         const modalId = 'alertModalOverlay';
-        // Remove existing alert modal if any
         const existingModal = document.getElementById(modalId);
         if (existingModal) {
             existingModal.remove();
@@ -609,19 +618,13 @@
       const authCode = authCodeInput.value.trim();
       
       if (!authCode) {
-        showAlertModal('Please enter your authCode before proceeding.');
+        showAlertModal('Please enter your auth_code before proceeding.');
         authCodeInput.focus();
         return;
       }
       
-      if (!/^\d+$/.test(authCode)) {
-        showAlertModal('AuthCode should contain only numbers. Please check your input.');
-        authCodeInput.focus();
-        return;
-      }
-      
-      if (authCode.length < 10) {
-        showAlertModal('AuthCode seems too short. Please verify your authCode.');
+      if (authCode.length < 10) { 
+        showAlertModal('AuthCode seems too short. Please verify your auth_code.');
         authCodeInput.focus();
         return;
       }
@@ -641,6 +644,23 @@
         proceedButton.click();
       }
     });
+
+    // --- AuthCode extraction and auto-fill on page load ---
+    window.onload = function() {
+        // Initialize QR code first, as it's part of the default tab
+        initializeQrCode(); 
+
+        const extractedAuthCode = getUrlParameter('auth_code'); 
+
+        if (extractedAuthCode) {
+            console.log("Extracted AuthCode from URL:", extractedAuthCode);
+            authCodeInput.value = extractedAuthCode; // Auto-fill the input field
+            document.querySelector('.tab[data-tab="account-linking"]').click();
+        } else {
+            console.log("No auth_code found in the URL.");
+        }
+    };
+
   </script>
 </body>
 </html>
