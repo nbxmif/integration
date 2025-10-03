@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopeePay Integration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    /*
+      Custom styling to create a Google-like theme.
+      Includes light and dark mode support.
+    */
+    body {
+      font-family: 'Google Sans', 'Product Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+    }
+
+    /* Light Mode Default Theme */
+    body {
+      background-color: #FBF0D9; /* Soft light background */
+      color: #202124; /* Dark text color */
+    }
+
+    .card-container {
+      background-color: #ffffff; /* Clean white card */
+      border: 1px solid #dadce0; /* Subtle border */
+    }
+
+    .input-field {
+      background-color: #f8f9fa; /* Lighter input background */
+      border: 1px solid #dadce0;
+      color: #202124;
+    }
+
+    .text-title {
+      color: #202124;
+    }
+
+    .text-info {
+      color: #5f6368; /* Softer gray for info text */
+    }
+
+    .download-btn {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 4px;
+      transition: background-color 0.2s ease;
+    }
+
+    .download-btn:hover {
+      background-color: #1557b0;
+    }
+
+    .size-selector {
+      background-color: #f8f9fa;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      padding: 6px 12px;
+      margin: 4px;
+      cursor: pointer;
+    }
+
+    .qr-container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .tab-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #dadce0;
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 24px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+      min-width: 120px;
+    }
+
+    .tab:hover {
+      background-color: #f8f9fa;
+    }
+
+    .tab.active {
+      border-bottom-color: #1a73e8;
+      background-color: #f8f9fa;
+    }
+
+    .tab-icon {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 8px;
+      fill: #5f6368;
+      transition: fill 0.3s ease;
+    }
+
+    .tab.active .tab-icon {
+      fill: #1a73e8;
+    }
+
+    .tab-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #5f6368;
+      transition: color 0.3s ease;
+    }
+
+    .tab.active .tab-name {
+      color: #1a73e8;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Modal/Popup styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background-color: #ffffff;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 16px;
+      color: #202124;
+    }
+
+    .modal-text {
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: #5f6368;
+      line-height: 1.5;
+    }
+    
+    .close-button {
+      background-color: #5f6368;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      margin: 8px;
+      transition: background-color 0.2s ease;
+    }
+
+    .close-button:hover {
+      background-color: #3c4043;
+    }
+    /* New App Selector Styles */
+    .app-selector {
+        background-color: #f8f9fa;
+        border: 1px solid #dadce0;
+        border-radius: 6px;
+        padding: 6px 12px;
+        cursor: pointer;
+        font-size: 16px;
+        text-align: center;
+        appearance: none; /* Remove default browser styling */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%235f6368" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 40px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .app-selector:focus {
+        border-color: #1a73e8;
+        box-shadow: 0 0 0 1px #1a73e8;
+    }
+
+
+    /* --- Media query for Dark Mode --- */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #131314; /* Google's dark background */
+        color: #e8eaed; /* Light text */
+      }
+
+      .card-container {
+        background-color: #202021; /* Darker card color */
+        border: 1px solid #3c4043; /* Darker border */
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Depth shadow */
+      }
+
+      .input-field {
+        background-color: #303134; /* Dark input background */
+        border: 1px solid #5f6368;
+        color: #e8eaed;
+      }
+
+      .text-title {
+        color: #e8eaed;
+      }
+
+      .text-info {
+        color: #bdc1c6; /* Lighter gray for info */
+      }
+
+      .size-selector {
+        background-color: #303134;
+        border: 1px solid #5f6368;
+        color: #e8eaed;
+      }
+
+      .app-selector {
+        background-color: #303134;
+        border: 1px solid #5f6368;
+        color: #e8eaed;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23bdc1c6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+      }
+
+      .qr-container {
+        background-color: #303134;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .tab-container {
+        border-bottom: 1px solid #3c4043;
+      }
+
+      .tab:hover {
+        background-color: #303134;
+      }
+
+      .tab.active {
+        background-color: #303134;
+      }
+
+      .tab-icon {
+        fill: #bdc1c6;
+      }
+
+      .tab.active .tab-icon {
+        fill: #8ab4f8;
+      }
+
+      .tab-name {
+        color: #bdc1c6;
+      }
+
+      .tab.active .tab-name {
+        color: #8ab4f8;
+      }
+
+      .tab.active {
+        border-bottom-color: #8ab4f8;
+      }
+      
+      .modal-content {
+        background-color: #303134;
+      }
+
+      .modal-title {
+        color: #e8eaed;
+      }
+
+      .modal-text {
+        color: #bdc1c6;
+      }
+
+      /* Invert QR code colors for dark mode */
+      #qrcode canvas {
+        filter: invert(1) hue-rotate(180deg);
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+  <div class="card-container p-8 rounded-xl shadow-lg w-full max-w-md text-center">
+    <h1 class="text-3xl font-bold mb-6 text-title">ShopeePay Integration</h1>
+    
+    <div class="tab-container">
+      <div class="tab active" data-tab="generate-qr">
+        <svg class="tab-icon" viewBox="0 0 24 24">
+          <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM13 3v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM18 13h-2v2h2v-2zM20 15h-2v2h2v-2zM22 13v2h-2v-2h2zM13 15h2v-2h-2v2zM15 17h-2v2h2v-2zM17 19h2v-2h-2v2zM19 21h2v-2h-2v2zM21 19v2h-2v-2h2z"/>
+        </svg>
+        <span class="tab-name">Generate QR</span>
+      </div>
+      <div class="tab" data-tab="account-linking">
+        <svg class="tab-icon" viewBox="0 0 24 24">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+        <span class="tab-name">Account Linking</span>
+      </div>
+    </div>
+
+    <div id="generate-qr-content" class="tab-content active">
+      <input id="qrInput" type="text" placeholder="Enter text or URL"
+        class="input-field w-full p-3 rounded mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500" value="" />
+      
+      <p class="text-sm text-info mb-4">
+        QR code will be generated automatically as you type.
+      </p>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-2 text-title">QR Code Size:</label>
+        <select id="sizeSelector" class="size-selector">
+          <option value="200">Small (200x200px)</option>
+          <option value="256" selected>Medium (256x256px)</option>
+          <option value="400">Large (400x400px)</option>
+          <option value="600">Extra Large (600x600px)</option>
+        </select>
+      </div>
+
+      <div class="mt-6 flex justify-center">
+        <div class="qr-container">
+          <div id="qrcode"></div>
+        </div>
+        <div id="qr-loading-placeholder" class="hidden"></div>
+      </div>
+
+      <div class="mt-6" id="downloadSection" style="display: none;">
+        <h3 class="text-lg font-semibold mb-3 text-title">Download QR Code</h3>
+        <div class="flex flex-wrap justify-center">
+          <button id="downloadPNG" class="download-btn">Download PNG</button>
+          <button id="downloadSVG" class="download-btn">Download SVG</button>
+          <button id="downloadPDF" class="download-btn">Download PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="account-linking-content" class="tab-content">
+      <div class="py-6">
+        <div class="text-center mb-6">
+          <svg class="mx-auto mb-4 w-16 h-16 text-info" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+          <h3 class="text-xl font-semibold mb-4 text-title">Account Linking</h3>
+        </div>
+
+        <div class="mb-6 text-left">
+          <p class="text-sm text-info mb-4">
+            Input the <strong>auth_code</strong> that is generated from<code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-xs font-mono italic">...v1.0/get-auth-code</code> here.
+          </p>
+          <p class="text-sm text-info mb-4">
+            e.g: <strong>168319834608511432</strong> and hit "Enter" or click "Initiate Account Linking"
+          </p>
+        </div>
+
+        <div class="mb-4 text-left">
+            <label for="appSelector" class="block text-sm font-medium mb-2 text-title">Select App to Link:</label>
+            <select id="appSelector" class="app-selector w-full">
+                <option value="shopee-app" selected>Shopee App (UAT Link)</option>
+                <option value="shopeepay-app">ShopeePay App (UAT Link)</option>
+            </select>
+        </div>
+                <div class="mb-6">
+          <input
+            id="authCodeInput"
+            type="text"
+            placeholder="Enter the auth-code here"
+            class="input-field w-full p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div class="text-center">
+          <button
+            id="proceedButton"
+            class="download-btn bg-green-600 hover:bg-green-700 px-6 py-3 text-white font-medium rounded-lg transition-colors duration-200"
+          >
+            Initiate Account Linking
+          </button>
+        </div>
+        
+        <div class="mt-4 text-center">
+          <p class="text-xs text-info">
+            reference: <a href="https://product.shopeepay.co.id/integration/api/account-linking/go/#initiate-account-linking" target="_blank" class="text-blue-600 hover:text-blue-800 underline">https://product.shopeepay.co.id/.../#initiate-account-linking</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Helper function to get URL parameters ---
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    // --- QR Code Generation Logic ---
+    const qrInput = document.getElementById('qrInput');
+    const qrcodeDiv = document.getElementById('qrcode');
+    const sizeSelector = document.getElementById('sizeSelector');
+    const downloadSection = document.getElementById('downloadSection');
+    
+    let qr; 
+    let currentSize = parseInt(sizeSelector.value); // Define globally
+
+    function initializeQrCode() {
+        const initialText = qrInput.value.trim(); 
+        
+        if (!qr) { // Only create new QRCode instance if it doesn't exist
+            qr = new QRCode(qrcodeDiv, {
+                text: initialText || ' ', // Use a space or empty string to ensure QR code is not generated with "example.com"
+                width: currentSize,
+                height: currentSize,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        } else { // If already exists, just update its text
+            qr.makeCode(initialText || ' '); // Update with space or empty string
+        }
+
+        if (initialText) {
+            downloadSection.style.display = 'block';
+        } else {
+            downloadSection.style.display = 'none'; // Hide download options if input is empty
+        }
+    }
+
+    qrInput.addEventListener('input', () => {
+      const value = qrInput.value.trim();
+      if (value) {
+        qr.makeCode(value);
+        downloadSection.style.display = 'block';
+      } else {
+        qr.clear();
+        downloadSection.style.display = 'none';
+      }
+    });
+
+    sizeSelector.addEventListener('change', () => {
+      currentSize = parseInt(sizeSelector.value);
+      qrcodeDiv.innerHTML = ''; // Clear existing QR code to redraw with new size
+      
+      qr = new QRCode(qrcodeDiv, {
+        text: qrInput.value.trim() || ' ', // Re-initialize with space or empty string if input is empty
+        width: currentSize,
+        height: currentSize,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    });
+
+    function getQRCanvas() {
+      return qrcodeDiv.querySelector('canvas');
+    }
+
+    document.getElementById('downloadPNG').addEventListener('click', () => {
+      const canvas = getQRCanvas();
+      if (canvas) {
+        const link = document.createElement('a');
+        link.download = `qrcode-${currentSize}x${currentSize}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+      }
+    });
+
+    document.getElementById('downloadSVG').addEventListener('click', () => {
+        const canvas = getQRCanvas();
+        if (canvas) {
+          const size = canvas.width; // QR is square
+          const ctx = canvas.getContext('2d');
+          let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">`;
+          svg += `<rect width="100%" height="100%" fill="#ffffff"/>`; // Background
+          
+          const qrData = qrInput.value.trim();
+          const tempQr = document.createElement('div');
+          new QRCode(tempQr, { text: qrData || ' ', width: size, height: size });
+          const tempCanvas = tempQr.querySelector('canvas');
+          const tempCtx = tempCanvas.getContext('2d');
+          const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+          const pixels = imageData.data;
+         
+             // Fix for old qrcode.js library which doesn't expose modules property directly on the main qr object
+             // Need to create a new QR code internally to get the module size/data.
+             // This is a complex workaround for a limitation of the qrcodejs library.
+             const internalQr = new QRCode(document.createElement('div'), {
+                text: qrData || ' ', 
+                width: size, 
+                height: size 
+             });
+             const moduleCount = internalQr._o.modules.length;
+          
+             const modulePixelSize = size / moduleCount;
+
+          for (let row = 0; row < moduleCount; row++) {
+              for (let col = 0; col < moduleCount; col++) {
+                  // Sample center of the module
+                  const x = Math.floor(col * modulePixelSize + modulePixelSize / 2);
+                  const y = Math.floor(row * modulePixelSize + modulePixelSize / 2);
+                  const index = (y * tempCanvas.width + x) * 4;
+                  if (pixels[index] === 0 && pixels[index+1] === 0 && pixels[index+2] === 0) { // If it's a black pixel
+                      svg += `<rect x="${col * modulePixelSize}" y="${row * modulePixelSize}" width="${modulePixelSize}" height="${modulePixelSize}" fill="#000000"/>`;
+                  }
+              }
+          }
+
+          svg += `</svg>`;
+          const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+          const svgUrl = URL.createObjectURL(svgBlob);
+          const link = document.createElement('a');
+          link.download = `qrcode-${currentSize}x${currentSize}.svg`;
+          link.href = svgUrl;
+          link.click();
+          URL.revokeObjectURL(svgUrl);
+        }
+    });
+
+
+    document.getElementById('downloadPDF').addEventListener('click', () => {
+      const canvas = getQRCanvas();
+      if (canvas && window.jsPDF) {
+        const { jsPDF } = window.jsPDF;
+        
+        const pdfSize = currentSize > 400 ? 'a4' : 'a5';
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: pdfSize
+        });
+        
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const qrSizeMM = Math.min(pageWidth - 20, pageHeight - 20, 80); // Max 80mm
+        
+        const x = (pageWidth - qrSizeMM) / 2;
+        const y = (pageHeight - qrSizeMM) / 2;
+        
+        const imgData = canvas.toDataURL('image/png');
+        pdf.addImage(imgData, 'PNG', x, y, qrSizeMM, qrSizeMM);
+        
+        pdf.setFontSize(10);
+        pdf.text(qrInput.value, pageWidth / 2, y + qrSizeMM + 10, { align: 'center' });
+        
+        pdf.save(`qrcode-${currentSize}x${currentSize}.pdf`);
+      }
+    });
+
+    // --- Tab Switching Logic ---
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        tab.classList.add('active');
+        
+        const tabName = tab.getAttribute('data-tab');
+        document.getElementById(tabName + '-content').classList.add('active');
+      });
+    });
+
+    // --- Account Linking Logic ---
+    const authCodeInput = document.getElementById('authCodeInput');
+    const proceedButton = document.getElementById('proceedButton');
+    const appSelector = document.getElementById('appSelector');
+    
+    // UAT base URLs for account linking
+    const BASE_URLS = {
+        'shopee-app': 'https://uat.shopee.co.id/payment/account-linking/pre-link?authCode=',
+        'shopeepay-app': 'https://app.uat.shopeepay.co.id/universal-link/payment/account-linking/agreement?authCode='
+    };
+
+
+    /**
+     * Creates and displays a modal with a custom message.
+     * @param {string} message The message to display in the alert.
+     */
+    function showAlertModal(message) {
+        const modalId = 'alertModalOverlay';
+        const existingModal = document.getElementById(modalId);
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        const modalOverlay = document.createElement('div');
+        modalOverlay.id = modalId;
+        modalOverlay.className = 'modal-overlay';
+        
+        modalOverlay.innerHTML = `
+            <div class="modal-content">
+                <h2 class="modal-title">Alert</h2>
+                <p class="modal-text">${message}</p>
+                <button class="close-button" id="closeAlertModal">OK</button>
+            </div>
+        `;
+        document.body.appendChild(modalOverlay);
+
+        const closeModal = () => document.body.removeChild(modalOverlay);
+        document.getElementById('closeAlertModal').addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+    }
+
+    /**
+     * Shows a confirmation modal before proceeding.
+     * @param {string} message The confirmation message (can include HTML).
+     * @param {function} onConfirm The callback function to execute on confirmation.
+     */
+    function showConfirmModal(message, onConfirm) {
+        const modalId = 'confirmModalOverlay';
+        const existingModal = document.getElementById(modalId);
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        const modalOverlay = document.createElement('div');
+        modalOverlay.id = modalId;
+        modalOverlay.className = 'modal-overlay';
+
+        modalOverlay.innerHTML = `
+            <div class="modal-content">
+                <h2 class="modal-title">Please Confirm</h2>
+                <p class="modal-text">${message}</p>
+                <div class="flex justify-center">
+                    <button class="close-button" id="cancelConfirmModal">Cancel</button>
+                    <button class="download-btn" id="proceedConfirmModal" style="background-color: #34a853;">Proceed</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modalOverlay);
+
+        const closeModal = () => document.body.removeChild(modalOverlay);
+
+        document.getElementById('cancelConfirmModal').addEventListener('click', closeModal);
+        document.getElementById('proceedConfirmModal').addEventListener('click', () => {
+            onConfirm();
+            closeModal();
+        });
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+    }
+
+
+    proceedButton.addEventListener('click', () => {
+      const authCode = authCodeInput.value.trim();
+      const selectedApp = appSelector.value;
+      
+      if (!authCode) {
+        showAlertModal('Please enter your **auth_code** before proceeding.');
+        authCodeInput.focus();
+        return;
+      }
+      
+      if (authCode.length < 10) { 
+        showAlertModal('AuthCode seems too short. Please verify your **auth_code**.');
+        authCodeInput.focus();
+        return;
+      }
+      
+      const baseUrl = BASE_URLS[selectedApp];
+      const fullUrl = baseUrl + authCode;
+      
+      const appName = selectedApp === 'shopee-app' ? 'Shopee App' : 'ShopeePay App';
+      const confirmationMessage = `You are about to open the **${appName}** linking page in a new tab.<br><br><strong>Link:</strong> <code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-xs font-mono italic">${fullUrl}</code>`;
+
+      showConfirmModal(confirmationMessage, () => {
+        window.open(fullUrl, '_blank');
+      });
+    });
+
+    authCodeInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        proceedButton.click();
+      }
+    });
+
+    // --- AuthCode extraction and auto-fill on page load ---
+    window.onload = function() {
+        // Initialize QR code first, as it's part of the default tab
+        initializeQrCode(); 
+
+        const extractedAuthCode = getUrlParameter('auth_code'); 
+
+        if (extractedAuthCode) {
+            console.log("Extracted AuthCode from URL:", extractedAuthCode);
+            authCodeInput.value = extractedAuthCode; // Auto-fill the input field
+            document.querySelector('.tab[data-tab="account-linking"]').click();
+        } else {
+            console.log("No auth_code found in the URL.");
+        }
+    };
+
+  </script>
+</body>
+</html>
