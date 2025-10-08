@@ -629,7 +629,7 @@
         return;
       }
       
-      const baseUrl = 'https://uat.shopee.co.id/payment/account-linking/pre-link?authCode=';
+      const baseUrl = 'https://app.uat.shopee.co.id/payment/account-linking/pre-link?authCode=';
       const fullUrl = baseUrl + authCode;
       
       const confirmationMessage = `You are about to open the ShopeePay linking page in a new tab.<br><br><strong>Please scan the QR code with your ShopeePay/Shopee UAT app to proceed.</strong>`;
