@@ -187,28 +187,28 @@
     .close-button:hover {
       background-color: #3c4043;
     }
-    /* New App Selector Styles */
-    .app-selector {
-        background-color: #f8f9fa;
-        border: 1px solid #dadce0;
-        border-radius: 6px;
-        padding: 6px 12px;
-        cursor: pointer;
-        font-size: 16px;
-        text-align: center;
-        appearance: none; /* Remove default browser styling */
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%235f6368" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        padding-right: 40px;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    .app-selector:focus {
-        border-color: #1a73e8;
-        box-shadow: 0 0 0 1px #1a73e8;
-    }
+    /* New App Selector Styles */
+    .app-selector {
+        background-color: #f8f9fa;
+        border: 1px solid #dadce0;
+        border-radius: 6px;
+        padding: 6px 12px;
+        cursor: pointer;
+        font-size: 16px;
+        text-align: center;
+        appearance: none; /* Remove default browser styling */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%235f6368" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 40px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .app-selector:focus {
+        border-color: #1a73e8;
+        box-shadow: 0 0 0 1px #1a73e8;
+    }
 
 
     /* --- Media query for Dark Mode --- */
@@ -248,7 +248,7 @@
         background-color: #303134;
         border: 1px solid #5f6368;
         color: #e8eaed;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23bdc1c6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23bdc1c6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
       }
 
       .qr-container {
@@ -379,14 +379,14 @@
           </p>
         </div>
 
-        <div class="mb-4 text-left">
-            <label for="appSelector" class="block text-sm font-medium mb-2 text-title">Select App to Link:</label>
-            <select id="appSelector" class="app-selector w-full">
-                <option value="shopee-app" selected>Shopee App (UAT Link)</option>
-                <option value="shopeepay-app">ShopeePay App (UAT Link)</option>
-            </select>
-        </div>
-                <div class="mb-6">
+        <div class="mb-4 text-left">
+            <label for="appSelector" class="block text-sm font-medium mb-2 text-title">Select App to Link:</label>
+            <select id="appSelector" class="app-selector w-full">
+                <option value="shopee-app" selected>Shopee App (UAT Link)</option>
+                <option value="shopeepay-app">ShopeePay App (UAT Link)</option>
+            </select>
+        </div>
+                <div class="mb-6">
           <input
             id="authCodeInput"
             type="text"
@@ -429,11 +429,11 @@
     const downloadSection = document.getElementById('downloadSection');
     
     let qr; 
-    let currentSize = parseInt(sizeSelector.value); // Define globally
+    let currentSize = parseInt(sizeSelector.value); // Define globally
 
     function initializeQrCode() {
         const initialText = qrInput.value.trim(); 
-        
+        
         if (!qr) { // Only create new QRCode instance if it doesn't exist
             qr = new QRCode(qrcodeDiv, {
                 text: initialText || ' ', // Use a space or empty string to ensure QR code is not generated with "example.com"
@@ -509,17 +509,17 @@
           const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
           const pixels = imageData.data;
          
-             // Fix for old qrcode.js library which doesn't expose modules property directly on the main qr object
-             // Need to create a new QR code internally to get the module size/data.
-             // This is a complex workaround for a limitation of the qrcodejs library.
-             const internalQr = new QRCode(document.createElement('div'), {
-                text: qrData || ' ', 
-                width: size, 
-                height: size 
-             });
-             const moduleCount = internalQr._o.modules.length;
-          
-             const modulePixelSize = size / moduleCount;
+             // Fix for old qrcode.js library which doesn't expose modules property directly on the main qr object
+             // Need to create a new QR code internally to get the module size/data.
+             // This is a complex workaround for a limitation of the qrcodejs library.
+             const internalQr = new QRCode(document.createElement('div'), {
+                text: qrData || ' ', 
+                width: size, 
+                height: size 
+             });
+             const moduleCount = internalQr._o.modules.length;
+          
+             const modulePixelSize = size / moduleCount;
 
           for (let row = 0; row < moduleCount; row++) {
               for (let col = 0; col < moduleCount; col++) {
@@ -590,13 +590,13 @@
     // --- Account Linking Logic ---
     const authCodeInput = document.getElementById('authCodeInput');
     const proceedButton = document.getElementById('proceedButton');
-    const appSelector = document.getElementById('appSelector');
-    
-    // UAT base URLs for account linking
-    const BASE_URLS = {
-        'shopee-app': 'https://uat.shopee.co.id/payment/account-linking/pre-link?authCode=',
-        'shopeepay-app': 'https://app.uat.shopeepay.co.id/universal-link/payment/account-linking/agreement?authCode='
-    };
+    const appSelector = document.getElementById('appSelector');
+    
+    // UAT base URLs for account linking
+    const BASE_URLS = {
+        'shopee-app': 'https://uat.shopee.co.id/payment/account-linking/pre-link?authCode=',
+        'shopeepay-app': 'https://app.uat.shopeepay.co.id/universal-link/payment/account-linking/agreement?authCode='
+    };
 
 
     /**
@@ -653,7 +653,7 @@
                 <div class="flex justify-center">
                     <button class="close-button" id="cancelConfirmModal">Cancel</button>
                     <button class="download-btn" id="proceedConfirmModal" style="background-color: #34a853;">Proceed</button>
-                </div>
+            </div>
             </div>
         `;
         document.body.appendChild(modalOverlay);
@@ -673,7 +673,7 @@
 
     proceedButton.addEventListener('click', () => {
       const authCode = authCodeInput.value.trim();
-      const selectedApp = appSelector.value;
+      const selectedApp = appSelector.value;
       
       if (!authCode) {
         showAlertModal('Please enter your **auth_code** before proceeding.');
@@ -690,7 +690,7 @@
       const baseUrl = BASE_URLS[selectedApp];
       const fullUrl = baseUrl + authCode;
       
-      const appName = selectedApp === 'shopee-app' ? 'Shopee App' : 'ShopeePay App';
+      const appName = selectedApp === 'shopee-app' ? 'Shopee App' : 'ShopeePay App';
       const confirmationMessage = `You are about to open the **${appName}** linking page in a new tab.<br><br><strong>Link:</strong> <code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-xs font-mono italic">${fullUrl}</code>`;
 
       showConfirmModal(confirmationMessage, () => {
@@ -714,6 +714,7 @@
         if (extractedAuthCode) {
             console.log("Extracted AuthCode from URL:", extractedAuthCode);
             authCodeInput.value = extractedAuthCode; // Auto-fill the input field
+            // Switch to the Account Linking tab
             document.querySelector('.tab[data-tab="account-linking"]').click();
         } else {
             console.log("No auth_code found in the URL.");
