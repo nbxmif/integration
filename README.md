@@ -1,4 +1,4 @@
-# ShopeePay Integration Flow
+# Integration Flow
 
 This page is containing ShopeePay integration flow using MPM (merchant presented mode) and Account Linking method. <br />
 ->Visit https://nbxmif.github.io/integration to try!
